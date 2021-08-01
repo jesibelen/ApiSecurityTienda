@@ -6,14 +6,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("api/productos")
+@RequestMapping("/api/productos")
 
 public class ProductoController {
-    private final  ProductoService productoService;
 
+    private final  ProductoService productoService;
     @Autowired
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
@@ -39,8 +38,8 @@ public class ProductoController {
         return productoService.guardarProducto(producto);
     }
 
-    @PostMapping(path = "/editar", consumes = "application/json")
-    private String editarProducto(@RequestBody ProductoEntity producto){
+    @PostMapping(path = "/crear", consumes = "application/json")
+    private String crearProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
@@ -55,8 +54,7 @@ public class ProductoController {
         SecurityContext securityContext= SecurityContextHolder.getContext();
 
         /*  me devuelve el nombre del usuario y esto verifica que nos estamos autenticando bien (OK)
-         return securityContext.getAuthentication().getName();
-         */
+         return securityContext.getAuthentication().getName(); */
         return  securityContext.getAuthentication().getAuthorities().toString();
         //Esto comprobo que fallo mi teoria de que mi rol que habia generado era manual
         // ya que al verlo por postman me aparece [ROLE_ADMIN]
