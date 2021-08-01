@@ -38,9 +38,9 @@ El metodo getPermisosConcedidos retorna un set de objetos de clase SimpleGranted
                 getPermissions().stream()
                 .map(permissions-> new SimpleGrantedAuthority(permissions.getPermission()))
                 .collect(Collectors.toSet());
-        // el mapa va agarra cada uno de mis permisos lo va a convertir en SimpleGrantedAuthority
+        // el mapa va agarra cada uno de mis permisos (ej:USER_WRITE) lo va a convertir en un objeto de SimpleGrantedAuthority con su respectivo string (ej: "user:write")
 
-        permisos.add(new SimpleGrantedAuthority("ROLE_"+ this.name()));// y le agrego ROLE_ y su nombre de rol
+        permisos.add(new SimpleGrantedAuthority("ROLE_"+ this.name()));//Luego agrego ROLE_ y su nombre de rol.
         return permisos;
     }
 
