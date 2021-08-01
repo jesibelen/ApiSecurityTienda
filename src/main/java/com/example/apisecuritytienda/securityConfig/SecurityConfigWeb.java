@@ -2,6 +2,7 @@ package com.example.apisecuritytienda.securityConfig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -12,17 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
-/*
-    # Si no realizo la configuracion de Security, igualmente se me autogenera una contrasenia dada por consola
- y mi usuario sera user, la otra opcion seria si no queremos una contrasnia autogenerada, para probar no mas...
- Seria escribir en aplication.properties lo siguiente:
 
-    spring.security.user.name= jesi
-    spring.security.user.password = miclave
-
-*/
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true) //para habilitar el (Antes)@preAuthorize o (Despues)@PostAuthorize
 public class SecurityConfigWeb extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -45,28 +39,33 @@ public class SecurityConfigWeb extends WebSecurityConfigurerAdapter {
 
     //Generator -> @OverrrideMethods -> UserDetailsService():UserDetailsService
     @Override
-    @Bean //Instanciame este objeto UserDetailService no me autogeneres la contrasenia por consola
+    @Bean
     protected UserDetailsService userDetailsService() {
         UserDetails usuario1 = User.builder()
                 .username("jesi")
                 .password(passwordEncoder().encode("clave"))
-                .roles(UserRole.ADMIN.name()) // El name me devuelve el nombre ADMIN en string
-                // , parecido lo que hicimos anteriormente solo que es nuestro ADMIN que generamos nosotros y no el de Spring
-                //.roles("ADMIN")// en el caso sin ENUM se crearia por spring automaticamente como ROLE_ADMIN
+                .authorities(UserRole.ADMIN.getGrantedAuthority())
                 .build();
 
         UserDetails usuario2 = User.builder()
                 .username("milhouse")
                 .password(passwordEncoder().encode("hola"))
-                .roles(UserRole.CLIENTE.name()) // tambien lo mismo se crearia ROLE_CLIENTE
+                .authorities(UserRole.CLIENTE.getGrantedAuthority())
                 .build();
 
         UserDetails usuario3 = User.builder()
                 .username("bart")
-                .password(passwordEncoder().encode("hola1"))
-                .roles(UserRole.ADMIN.name())
+                .password(passwordEncoder().encode("hola"))
+                .authorities(UserRole.ADMIN.getGrantedAuthority())
                 .build();
-        return new InMemoryUserDetailsManager(usuario1,usuario2,usuario3);
+
+        UserDetails usuario4 = User.builder()
+                .username("tester")
+                .password(passwordEncoder().encode("clave"))
+                .authorities(UserRole.SELLER.getGrantedAuthority())
+                .build();
+
+        return new InMemoryUserDetailsManager(usuario1,usuario2,usuario3,usuario4);
 
         /*
         Un rol es una lista de autoridades (permisos) que son de la clase SimpleGrantedAuthority (La autoridad concedidad)
