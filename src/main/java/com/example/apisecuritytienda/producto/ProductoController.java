@@ -1,6 +1,7 @@
 package com.example.apisecuritytienda.producto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/productos")
+@RequestMapping("/api/productos")
 
 public class ProductoController {
     private final  ProductoService productoService;
@@ -25,26 +26,31 @@ public class ProductoController {
     }
 
     @GetMapping("/buscar/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_CLIENTE')")
     private ProductoEntity getProductoId(@PathVariable Integer id){
         return productoService.getProductoPorId(id);
     }
 
     @GetMapping("/{nombre}")
+    @PreAuthorize("hasAnyAuthority('producto:read')")
     private List<ProductoEntity> buscarProductoNombre(@PathVariable String nombre){
         return productoService.getProductoNombre(nombre);
     }
 
     @PutMapping(path = "/guardar", consumes = "application/json")
-    private String guardarProducto(@RequestBody ProductoEntity producto){
-        return productoService.guardarProducto(producto);
-    }
-
-    @PostMapping(path = "/editar", consumes = "application/json")
+    @PreAuthorize("hasAuthority('producto:write')")
     private String editarProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
+    @PostMapping(path = "/editar", consumes = "application/json")
+    @PreAuthorize("hasAuthority('producto:write')")
+    private String crearProducto(@RequestBody ProductoEntity producto){
+        return productoService.guardarProducto(producto);
+    }
+
     @DeleteMapping("/borrar/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     private String borrarProducto(@PathVariable Integer id){
         return productoService.borrarProducto(id);
     }

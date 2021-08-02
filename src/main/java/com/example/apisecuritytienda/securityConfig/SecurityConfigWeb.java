@@ -1,16 +1,17 @@
 package com.example.apisecuritytienda.securityConfig;
 
+import com.example.apisecuritytienda.securityConfig.auth.AppUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 /*
     # Si no realizo la configuracion de Security, igualmente se me autogenera una contrasenia dada por consola
@@ -23,7 +24,16 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 */
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public class SecurityConfigWeb extends WebSecurityConfigurerAdapter {
+
+    //Se inyecta el appUserService
+    private final AppUserService appUserService;
+    @Autowired
+    public SecurityConfigWeb(AppUserService appUserService) {
+        this.appUserService = appUserService;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -43,33 +53,16 @@ public class SecurityConfigWeb extends WebSecurityConfigurerAdapter {
         //el parametro strenght me indica la cantidad de veces que se hasheara mi clave mediante el algoritmo BCrypt
     }
 
-    //Generator -> @OverrrideMethods -> UserDetailsService():UserDetailsService
     @Override
-    @Bean //Instanciame este objeto UserDetailService no me autogeneres la contrasenia por consola
-    protected UserDetailsService userDetailsService() {
-        UserDetails usuario1 = User.builder()
-                .username("jesi")
-                .password(passwordEncoder().encode("clave"))
-                .roles(UserRole.ADMIN.name()) // El name me devuelve el nombre ADMIN en string
-                // , parecido lo que hicimos anteriormente solo que es nuestro ADMIN que generamos nosotros y no el de Spring
-                //.roles("ADMIN")// en el caso sin ENUM se crearia por spring automaticamente como ROLE_ADMIN
-                .build();
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProvider());
+    }
 
-        UserDetails usuario2 = User.builder()
-                .username("milhouse")
-                .password(passwordEncoder().encode("hola"))
-                .roles(UserRole.CLIENTE.name()) // tambien lo mismo se crearia ROLE_CLIENTE
-                .build();
-
-        UserDetails usuario3 = User.builder()
-                .username("bart")
-                .password(passwordEncoder().encode("hola1"))
-                .roles(UserRole.ADMIN.name())
-                .build();
-        return new InMemoryUserDetailsManager(usuario1,usuario2,usuario3);
-
-        /*
-        Un rol es una lista de autoridades (permisos) que son de la clase SimpleGrantedAuthority (La autoridad concedidad)
-         */
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider(){
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setUserDetailsService(appUserService);
+        return provider;
     }
 }
