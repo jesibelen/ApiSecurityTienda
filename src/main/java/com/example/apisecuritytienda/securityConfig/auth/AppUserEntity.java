@@ -131,10 +131,6 @@ public class AppUserEntity implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
-    }
-
-    public boolean isCredentialNonExpired() {
         return credentialNonExpired;
     }
 

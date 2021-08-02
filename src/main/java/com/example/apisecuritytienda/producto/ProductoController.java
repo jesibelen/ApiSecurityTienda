@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("api/productos")
 
 public class ProductoController {
     private final  ProductoService productoService;
@@ -26,7 +26,7 @@ public class ProductoController {
     }
 
     @GetMapping("/buscar/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_CLIENTE')")
+    @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_CLIENTE', 'ROLE_ADMIN')")
     private ProductoEntity getProductoId(@PathVariable Integer id){
         return productoService.getProductoPorId(id);
     }
