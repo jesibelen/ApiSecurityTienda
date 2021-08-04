@@ -20,38 +20,38 @@ public class ProductoController {
     }
 
     @GetMapping
-    private List<ProductoEntity> listarProductos(){
+    public List<ProductoEntity> listarProductos(){
         return productoService.listarProducto();
     }
 
     @GetMapping("/buscar/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_CLIENTE')")
     //@PreAuthorize("hasAnyAuthority('producto:write','producto:read')")
-    private ProductoEntity getProductoId(@PathVariable Integer id){
+    public ProductoEntity getProductoId(@PathVariable Integer id){
         return productoService.getProductoPorId(id);
     }
 
     @GetMapping("/{nombre}")
     @PreAuthorize("hasAnyAuthority('producto:write','producto:read')")//cualquiera que pueda leer o escribir producto puede buscaProductoxNombre
-    private List<ProductoEntity> buscarProductoNombre(@PathVariable String nombre){
+    public List<ProductoEntity> buscarProductoNombre(@PathVariable String nombre){
         return productoService.getProductoNombre(nombre);
     }
 
     @PutMapping(path = "/editar", consumes = "application/json")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    private String guardarProducto(@RequestBody ProductoEntity producto){
+    public String guardarProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
     @PostMapping(path = "/crear", consumes = "application/json")
     @PreAuthorize("hasAuthority('producto:write')")// El que tenga permiso de escribir producto, sin importar su rol, podra crear un producto
-    private String crearProducto(@RequestBody ProductoEntity producto){
+    public String crearProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
     @DeleteMapping("/borrar/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    private String borrarProducto(@PathVariable Integer id){
+    public String borrarProducto(@PathVariable Integer id){
         return productoService.borrarProducto(id);
     }
 
