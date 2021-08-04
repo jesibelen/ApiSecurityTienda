@@ -23,7 +23,7 @@ public class ProductoService {
     }
 
     public List<ProductoEntity> getProductoNombre(String nombre){
-        return productoRepo.findProductoEntityByNombreContaining(nombre);
+        return productoRepo.findProductoEntitiesByNombreContaining(nombre);
     }
 
     public String guardarProducto (ProductoEntity productoRecibido){

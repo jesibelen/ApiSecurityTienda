@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface ProductoRepo extends JpaRepository<ProductoEntity, Integer> {
-    List<ProductoEntity>findProductoEntityByNombreContaining(String nombre);
+    List<ProductoEntity>findProductoEntitiesByNombreContaining(String nombre);
 }

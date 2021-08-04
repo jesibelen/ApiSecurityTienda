@@ -21,37 +21,37 @@ public class ProductoController {
     }
 
     @GetMapping
-    private List<ProductoEntity> listarProductos(){
+    public List<ProductoEntity> listarProductos(){
         return productoService.listarProducto();
     }
 
     @GetMapping("/buscar/{id}")
     @PreAuthorize("hasAnyRole('ROLE_SELLER', 'ROLE_CLIENTE', 'ROLE_ADMIN')")
-    private ProductoEntity getProductoId(@PathVariable Integer id){
+    public ProductoEntity getProductoId(@PathVariable Integer id){
         return productoService.getProductoPorId(id);
     }
 
     @GetMapping("/{nombre}")
     @PreAuthorize("hasAnyAuthority('producto:read')")
-    private List<ProductoEntity> buscarProductoNombre(@PathVariable String nombre){
+    public List<ProductoEntity> buscarProductoNombre(@PathVariable String nombre){
         return productoService.getProductoNombre(nombre);
     }
 
     @PutMapping(path = "/guardar", consumes = "application/json")
     @PreAuthorize("hasAuthority('producto:write')")
-    private String editarProducto(@RequestBody ProductoEntity producto){
+    public String editarProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
     @PostMapping(path = "/editar", consumes = "application/json")
     @PreAuthorize("hasAuthority('producto:write')")
-    private String crearProducto(@RequestBody ProductoEntity producto){
+    public String crearProducto(@RequestBody ProductoEntity producto){
         return productoService.guardarProducto(producto);
     }
 
     @DeleteMapping("/borrar/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    private String borrarProducto(@PathVariable Integer id){
+    public String borrarProducto(@PathVariable Integer id){
         return productoService.borrarProducto(id);
     }
 
